@@ -97,10 +97,12 @@
 </template>
 <script>
 import https from "../axios.config";
+import { useToast } from "vue-toastification";
 export default {
   data() {
     return {
       loading: false,
+      toast: useToast(),
       errors: {
         name: "",
         description: "",
@@ -179,14 +181,16 @@ export default {
       if (!this.isValid) return;
       this.loading = true;
       const response = await https.post("/products.json", this.product);
+      console.log(response);
       this.loading = false;
-      (this.product = {
+      this.product = {
         name: "",
         description: "",
         price: "",
         image: "",
-      }),
-        this.$router.push({ name: "home" });
+      };
+      this.toast.success("Your product has been created");
+      this.$router.push({ name: "home" });
     },
   },
 };

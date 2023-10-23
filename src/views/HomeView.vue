@@ -17,17 +17,35 @@
         v-for="item in products"
         :key="item.id"
         :products="item.data"
+        @delete="productDelete = item.id"
       />
     </div>
+    <PopupVue :show="productDelete">
+      <div class="actions flex gap-2">
+        <button
+          class="btn py-2 text-sm bg-slate-500 text-white w-1/2 rounded hover:opacity-80"
+          @click="productDelete = null"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn py-2 text-sm bg-red-500 text-white w-1/2 rounded hover:opacity-80"
+        >
+          Delete
+        </button>
+      </div>
+    </PopupVue>
   </main>
 </template>
 <script>
 import https from "../axios.config";
+import PopupVue from "../components/Popup.vue";
 import ProductCard from "../components/ProductCard.vue";
 import ProductCardSkeletonVue from "../components/ProductCardSkeleton.vue";
 export default {
   data() {
     return {
+      productDelete: null,
       products: [],
     };
   },
@@ -47,6 +65,7 @@ export default {
   components: {
     ProductCard,
     ProductCardSkeletonVue,
+    PopupVue,
   },
 };
 </script>

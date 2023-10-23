@@ -15,7 +15,9 @@
         {{ products.description }}
       </p>
       <div class="price">
-        <p class="text-cyan-800 font-bold my-2 text-xl">${{ products.price }}</p>
+        <p class="text-cyan-800 font-bold my-2 text-xl">
+          ${{ products.price }}
+        </p>
       </div>
     </div>
     <div class="actions flex gap-3">
@@ -23,7 +25,7 @@
         <i class="fa-solid fa-pen-to-square"></i>
         <span class="ml-2">Edit</span>
       </button>
-      <button class="btn delete bg-red-500">
+      <button class="btn delete bg-red-500" @click="$emit('delete')">
         <i class="fa-solid fa-trash"></i>
         <span class="ml-2">Delete</span>
       </button>
