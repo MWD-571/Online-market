@@ -3,19 +3,19 @@
     <div class="image">
       <img
         class="h-[250px] w-full object-cover rounded"
-        src="https://images.uzum.uz/cia47ib6edfostihhq40/t_product_540_high.jpg#1697896756530"
-        alt="product-image"
+        :src="products.image"
+        :alt="products.name"
       />
     </div>
     <div class="text-content">
-      <h3 class="product-name text-xl text-dark-800 my-4">Product name</h3>
+      <h3 class="product-name text-xl text-dark-800 my-4">
+        {{ products.name }}
+      </h3>
       <p class="product-description text-gray-600">
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aspernatur
-        amet deserunt itaque suscipit accusamus a, neque soluta accusantium
-        reiciendis harum?
+        {{ products.description }}
       </p>
       <div class="price">
-        <p class="text-cyan-800 font-bold my-2 text-xl">$5600</p>
+        <p class="text-cyan-800 font-bold my-2 text-xl">${{ products.price }}</p>
       </div>
     </div>
     <div class="actions flex gap-3">
@@ -31,7 +31,14 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  props: {
+    products: {
+      type: Object,
+      default: {},
+    },
+  },
+};
 </script>
 <style scoped>
 .btn {

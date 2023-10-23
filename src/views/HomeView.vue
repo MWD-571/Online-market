@@ -11,22 +11,42 @@
       </button>
     </div>
     <div class="wrapper flex flex-wrap justify-center gap-4 mt-5">
-      <ProductCard v-for="item in 10" :key="item" />
+      <ProductCardSkeletonVue v-for="i in 8" :key="i" v-if="!products.length" />
+      <ProductCard
+        v-else
+        v-for="item in products"
+        :key="item.id"
+        :products="item.data"
+      />
     </div>
   </main>
 </template>
 <script>
+import https from "../axios.config";
 import ProductCard from "../components/ProductCard.vue";
+import ProductCardSkeletonVue from "../components/ProductCardSkeleton.vue";
 export default {
   data() {
-    return {};
+    return {
+      products: [],
+    };
   },
-  methods: {},
+  methods: {
+    async fectProducts() {
+      const response = await https.get("/products.json");
+      const productList = [];
+      Object.keys(response.data).forEach((key) => {
+        productList.push({ id: key, data: response.data[key] });
+      });
+      this.products = productList;
+    },
+  },
+  mounted() {
+    this.fectProducts();
+  },
   components: {
     ProductCard,
+    ProductCardSkeletonVue,
   },
 };
 </script>
-<style></style>
-
-ProductCard

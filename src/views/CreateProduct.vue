@@ -16,15 +16,16 @@
     >
       <h3 class="text-xl mb-2">New product</h3>
       <div class="form-control mb-3">
-        <label class="inline-block w-full text-sm text-gray-400" for="name"
-          >Product name</label
-        >
+        <label class="inline-block w-full text-sm text-gray-400" for="name">
+          Product name
+        </label>
         <input
           class="input"
           type="text"
           id="name"
           autocomplete="off"
           v-model.trim="product.name"
+          required
         />
         <p class="error-message text-xs text-red-400" v-if="errors.name">
           {{ errors.name }}
@@ -34,62 +35,72 @@
         <label
           class="inline-block w-full text-sm text-gray-400"
           for="description"
-          >Product description</label
         >
+          Product description
+        </label>
         <input
           class="input"
           type="text"
           id="description"
           autocomplete="off"
           v-model.trim="product.description"
+          required
         />
         <p class="error-message text-xs text-red-400" v-if="errors.description">
           {{ errors.description }}
         </p>
       </div>
       <div class="form-control mb-3">
-        <label class="inline-block w-full text-sm text-gray-400" for="price"
-          >Product price</label
-        >
+        <label class="inline-block w-full text-sm text-gray-400" for="price">
+          Product price
+        </label>
         <input
           class="input"
           type="text"
           id="price"
           autocomplete="off"
           v-model.number="product.price"
+          required
         />
         <p class="error-message text-xs text-red-400" v-if="errors.price">
           {{ errors.price }}
         </p>
       </div>
       <div class="form-control mb-3">
-        <label class="inline-block w-full text-sm text-gray-400" for="image"
-          >Product image</label
-        >
+        <label class="inline-block w-full text-sm text-gray-400" for="image">
+          Product image
+        </label>
         <input
           class="input"
           type="text"
           id="image"
           autocomplete="off"
           v-model.trim="product.image"
+          required
         />
         <p class="error-message text-xs text-red-400" v-if="errors.image">
           {{ errors.image }}
         </p>
       </div>
       <div class="actions flex justify-end">
-        <button class="btn px-5 py-2 text-white bg-blue-500 rounded">
-          <i class="fa-solid fa-plus mr-2"></i>
-          <span>Create</span>
+        <button
+          class="btn px-5 py-2 text-white bg-blue-500 rounded cursor-pointer"
+          :class="{ 'bg-gray-200': !isValid }"
+          :disabled="!isValid || loading"
+        >
+          <i class="fa-solid fa-plus mr-2" v-if="!loading"></i>
+          <span>{{ loading ? "Loading..." : "Create" }}</span>
         </button>
       </div>
     </form>
   </main>
 </template>
 <script>
+import https from "../axios.config";
 export default {
   data() {
     return {
+      loading: false,
       errors: {
         name: "",
         description: "",
@@ -112,6 +123,14 @@ export default {
         !this.errors.price &&
         !this.errors.image
       ) {
+        if (
+          !this.product.name &&
+          !this.product.description &&
+          !this.product.price &&
+          !this.product.image
+        ) {
+          return false;
+        }
         return true;
       } else {
         return false;
@@ -123,8 +142,8 @@ export default {
       handler(newValue) {
         if (newValue.name.length < 4) {
           this.errors.name = "Minimum length is 4 words";
-        } else if (newValue.name.length > 15) {
-          this.errors.name = "At least no more than 15 characters";
+        } else if (newValue.name.length > 25) {
+          this.errors.name = "At least no more than 25 characters";
         } else {
           this.errors.name = "";
         }
@@ -146,7 +165,7 @@ export default {
           /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
         if (newValue.image.length < 1) {
           this.errors.image = "Minimum length is 1";
-        } else if (httpRegex.test(newValue.image)) {
+        } else if (!httpRegex.test(newValue.image)) {
           this.errors.image = "Enter here correct URL";
         } else {
           this.errors.image = "";
@@ -156,8 +175,18 @@ export default {
     },
   },
   methods: {
-    createProduct() {
-      this.isValid();
+    async createProduct() {
+      if (!this.isValid) return;
+      this.loading = true;
+      const response = await https.post("/products.json", this.product);
+      this.loading = false;
+      (this.product = {
+        name: "",
+        description: "",
+        price: "",
+        image: "",
+      }),
+        this.$router.push({ name: "home" });
     },
   },
 };
