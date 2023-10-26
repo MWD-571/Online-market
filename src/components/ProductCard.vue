@@ -21,7 +21,11 @@
       </div>
     </div>
     <div class="actions flex gap-3">
-      <button class="btn edit bg-yellow-500">
+      <button class="btn delete bg-blue-500" @click="$emit('cart')">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="ml-2">Cart</span>
+      </button>
+      <button class="btn edit bg-yellow-400" @click="$emit('edit')">
         <i class="fa-solid fa-pen-to-square"></i>
         <span class="ml-2">Edit</span>
       </button>
@@ -44,6 +48,6 @@ export default {
 </script>
 <style scoped>
 .btn {
-  @apply py-2 text-white font-semibold w-1/2 rounded hover:opacity-80;
+  @apply py-2 text-white font-semibold w-1/3 rounded hover:opacity-80;
 }
 </style>

@@ -1,18 +1,20 @@
 <template>
   <main class="container py-[50px]">
     <div class="head flex justify-between items-center">
-      <h2 class="text-3xl text-gray-700">SuperMarket</h2>
+      <h2 class="text-3xl text-gray-700">
+        {{ $route.params.id ? "Edit" : "New product" }}
+      </h2>
       <button
         class="btn py-2 px-7 bg-blue-600 text-white rounded hover:opacity-80"
         @click="$router.push({ name: 'home' })"
       >
         <i class="fa-solid fa-home mr-2"></i>
-        <span>Home</span>
+        <span>Go home</span>
       </button>
     </div>
     <form
       class="form w-full max-w-[400px] mx-auto p-5 rounded bg-white shadow"
-      @submit.prevent="createProduct"
+      @submit.prevent="handleAction"
     >
       <h3 class="text-xl mb-2">New product</h3>
       <div class="form-control mb-3">
@@ -82,14 +84,28 @@
           {{ errors.image }}
         </p>
       </div>
-      <div class="actions flex justify-end">
+      <div class="image-preview">
+        <img class="w-full" :src="product.image" alt="preview-image" />
+      </div>
+      <div class="actions flex justify-end mt-4">
         <button
+          v-if="!$route.params.id"
           class="btn px-5 py-2 text-white bg-blue-500 rounded cursor-pointer"
           :class="{ 'bg-gray-200': !isValid }"
           :disabled="!isValid || loading"
         >
           <i class="fa-solid fa-plus mr-2" v-if="!loading"></i>
           <span>{{ loading ? "Loading..." : "Create" }}</span>
+        </button>
+
+        <button
+          v-else
+          class="btn px-5 py-2 text-white bg-yellow-400 rounded cursor-pointer"
+          :class="{ 'bg-gray-200': !isValid }"
+          :disabled="!isValid || loading"
+        >
+          <i class="fa-solid fa-edit mr-2" v-if="!loading"></i>
+          <span>{{ loading ? "Loading..." : "Edit" }}</span>
         </button>
       </div>
     </form>
@@ -177,11 +193,17 @@ export default {
     },
   },
   methods: {
+    handleAction() {
+      if (this.$route.params.id) {
+        this.editProduct();
+      } else {
+        this.createProduct();
+      }
+    },
     async createProduct() {
       if (!this.isValid) return;
       this.loading = true;
       const response = await https.post("/products.json", this.product);
-      console.log(response);
       this.loading = false;
       this.product = {
         name: "",
@@ -192,6 +214,35 @@ export default {
       this.toast.success("Your product has been created");
       this.$router.push({ name: "home" });
     },
+    async editProduct() {
+      if (!this.isValid) return;
+      const id = this.$route.params.id;
+      this.loading = true;
+      const response = await https.patch(
+        "/products/" + id + ".json",
+        this.product
+      );
+      this.loading = false;
+      this.product = {
+        name: "",
+        description: "",
+        price: "",
+        image: "",
+      };
+      this.toast.warning("Your product has been edited");
+      this.$router.push({ name: "home" });
+    },
+    async fetchProductById() {
+      const id = this.$route.params.id;
+      if (!id) return;
+      const response = await https.get("/products/" + id + ".json");
+      this.product = response.data;
+    },
+  },
+  mounted() {
+    if (this.$route.params.id) {
+      this.fetchProductById();
+    }
   },
 };
 </script>

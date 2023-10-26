@@ -1,7 +1,7 @@
 import Toast from "vue-toastification";
 const options = {
     position: "top-right",
-    timeout: 2000,
+    timeout: 2500,
     closeOnClick: true,
     pauseOnFocusLoss: true,
     pauseOnHover: true,
